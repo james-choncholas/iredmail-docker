@@ -20,7 +20,7 @@ do
     sleep 1
 done
 
-while [ ! -f /var/log/dovecot.log ]
+while [ ! -f /var/log/dovecot/dovecot.log ]
 do
     sleep 1
 done
