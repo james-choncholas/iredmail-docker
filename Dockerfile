@@ -37,7 +37,7 @@ RUN wget -O - https://bitbucket.org/zhb/iredmail/downloads/iRedMail-"${IREDMAIL_
 # Generate configuration file
 COPY ./config-gen /opt/iredmail/config-gen
 RUN sh ./config-gen HOSTNAME DOMAIN > ./config
-RUN mkdir /var/run/mysql && chown mysql:mysql /var/run/mysql 
+RUN mkdir /var/run/mysql && chown mysql:mysql /var/run/mysql
 
 # Initiate automatic installation process
 RUN sed s/$(hostname)/$HOSTNAME.$DOMAIN/ /etc/hosts > /tmp/hosts_ \
@@ -72,7 +72,10 @@ RUN sed -i '/^Foreground /c Foreground true' /etc/clamav/clamd.conf \
     && sed -i 's/iptables-multiport/dummy/' /etc/fail2ban/jail.d/* \
     && sed -i 's!<HOST>!<HOST>.*!'  /etc/fail2ban/filter.d/sogo-auth.conf \
     && sed -i 's!<HOST>!.*X-Real-IP: <HOST>.*!'  /etc/fail2ban/filter.d/roundcube-auth.conf \
-    && sed -i 's!<HOST>!.*X-Real-IP: <HOST>.*!'  /etc/fail2ban/filter.d/roundcube.local.conf \
+    && sed -i 's!<HOST>!.*X-Real-IP: <HOST>.*!'  /etc/fail2ban/filter.d/roundcube.iredmail.conf \
+    && sed -i '1s!^!log_format main \x27$time_local $http_x_forwarded_for $remote_user  "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"\x27;!' /etc/nginx/conf-available/log.conf \
+    && sed -i 's!access.log;!access.log main;!' /etc/nginx/conf-available/log.conf \
+    && sed -i 's!^failregex.*$!failregex = ^ <HOST> .*INVALID_CREDENTIALS.*$!' /etc/fail2ban/filter.d/nginx-http-auth.conf \
     && install -o amavis -g amavis -m 750 -d /var/lib/amavis/.spamassassin \
     && install -o amavis -g amavis -m 640 -T /usr/share/spamassassin/user_prefs.template /var/lib/amavis/.spamassassin/user_prefs \
     && rm -f /etc/ssl/private/iRedMail.key \
