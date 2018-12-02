@@ -71,6 +71,8 @@ RUN sed -i '/^Foreground /c Foreground true' /etc/clamav/clamd.conf \
     && sed -i 's/banaction = .*/banaction = dummy/' /etc/fail2ban/jail.conf \
     && sed -i 's/iptables-multiport/dummy/' /etc/fail2ban/jail.d/* \
     && sed -i 's!<HOST>!<HOST>.*!'  /etc/fail2ban/filter.d/sogo-auth.conf \
+    && sed -i 's!<HOST>!.*X-Real-IP: <HOST>.*!'  /etc/fail2ban/filter.d/roundcube-auth.conf \
+    && sed -i 's!<HOST>!.*X-Real-IP: <HOST>.*!'  /etc/fail2ban/filter.d/roundcube.local.conf \
     && install -o amavis -g amavis -m 750 -d /var/lib/amavis/.spamassassin \
     && install -o amavis -g amavis -m 640 -T /usr/share/spamassassin/user_prefs.template /var/lib/amavis/.spamassassin/user_prefs \
     && rm -f /etc/ssl/private/iRedMail.key \
