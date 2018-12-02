@@ -76,6 +76,7 @@ RUN sed -i '/^Foreground /c Foreground true' /etc/clamav/clamd.conf \
     && sed -i '1s!^!log_format main \x27$time_local $http_x_forwarded_for $remote_user  "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"\x27;!' /etc/nginx/conf-available/log.conf \
     && sed -i 's!access.log;!access.log main;!' /etc/nginx/conf-available/log.conf \
     && sed -i 's!^failregex.*$!failregex = ^ <HOST> .*INVALID_CREDENTIALS.*$!' /etc/fail2ban/filter.d/nginx-http-auth.conf \
+    && sed -i 's!error.log!access.log!' /etc/fail2ban/jail.d/nginx-http-auth.local \
     && install -o amavis -g amavis -m 750 -d /var/lib/amavis/.spamassassin \
     && install -o amavis -g amavis -m 640 -T /usr/share/spamassassin/user_prefs.template /var/lib/amavis/.spamassassin/user_prefs \
     && rm -f /etc/ssl/private/iRedMail.key \
